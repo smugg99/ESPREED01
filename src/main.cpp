@@ -2,21 +2,22 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 
-const char* ssid = "Funbox6-420D";
-const char* password = "Wysowianka1";
+
+const char* SSID = "ssid";
+const char* PASSWORD = "password";
+
+const int REED_SWITCH_PIN = 2;
+const unsigned long WIFI_CHECK_INTERVAL = 5000;
 
 ESP8266WebServer server(80);
-
-const int reedSwitchPin = 2;
-
 unsigned long lastWiFiCheckTime = 0;
-const unsigned long WiFiCheckInterval = 5000;
+
 
 void handleRoot();
 
 void connect_to_wifi() {
   if (WiFi.status() != WL_CONNECTED) {
-    WiFi.begin(ssid, password);
+    WiFi.begin(SSID, PASSWORD);
     while (WiFi.status() != WL_CONNECTED) {
       delay(1000);
     }
@@ -24,9 +25,9 @@ void connect_to_wifi() {
 }
 
 void setup() {
-  pinMode(reedSwitchPin, INPUT);
+  pinMode(REED_SWITCH_PIN, INPUT);
 
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
   connect_to_wifi();
 
   server.on("/", HTTP_GET, handleRoot);
@@ -37,14 +38,14 @@ void loop() {
   server.handleClient();
 
   unsigned long currentTime = millis();
-  if (currentTime - lastWiFiCheckTime >= WiFiCheckInterval) {
+  if (currentTime - lastWiFiCheckTime >= WIFI_CHECK_INTERVAL) {
     lastWiFiCheckTime = currentTime;
     connect_to_wifi();
   }
 }
 
 void handleRoot() {
-  bool reedSwitchValue = digitalRead(reedSwitchPin) == LOW;
+  bool reedSwitchValue = digitalRead(REED_SWITCH_PIN) == LOW;
 
   StaticJsonDocument<200> jsonDoc;
   jsonDoc["pinState"] = reedSwitchValue;
