@@ -45,7 +45,7 @@ void loop() {
 }
 
 void handleRoot() {
-  bool reedSwitchValue = digitalRead(REED_SWITCH_PIN) == LOW;
+  bool reedSwitchValue = digitalRead(REED_SWITCH_PIN) == HIGH;
 
   StaticJsonDocument<200> jsonDoc;
   jsonDoc["pinState"] = reedSwitchValue;
